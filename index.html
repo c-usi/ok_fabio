@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Ok Fabio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+    padding: 0 5%;
+}
+
+p {
+    font-size: 18px;
+}
+
+#ok_header {
+    margin: auto;
+    position: relative;
+    width: 200px;
+}
+
+#ok_marquee {
+    color: red;
+    font-size: 28px;
+    margin: auto;
+    opacity: 0;
+    position: relative;
+    top: 42px;
+    width: 100%;
+}
+
+#ok_btn {
+    background-color: black;
+    border: none;
+    color: white;
+    font-size: 28px;
+    padding: 8px 32px;
+    text-align: center;
+    text-decoration: underline;
+}
+
+#ok_history_action {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+#ok_reset {
+    display: block;
+    background-color: transparent;
+    border: none;
+    color: black;
+    font-size: 16px;
+    padding: 8px 32px;
+    text-align: center;
+    text-decoration: underline;
+}
+
+@media only screen and (max-width: 500px) {
+    h1 {
+        font-size: 48px;
+    }
+
+    #ok_btn {
+        font-size: 56px;
+        padding: 8px 64px;
+    }
+
+    #ok_history_action {
+        display: block;
+    }
+
+    #ok_reset {
+        font-size: 20px;
+        padding: 16px 64px;
+        margin: auto;
+    }
+}
+
+</style>
+</head>
+<body onload="updateUI()">
+    <div id="ok_header">
+        <marquee id="ok_marquee"><b>Ok!</b></marquee>
+        <img src="https://www.inf.usi.ch/research/sites/default/files/photos/FabioCrestani-avatar.jpg" alt="Fabio 1" height="200px" />
+    </div>
+    <div align="center">
+        <h1>Ok Fabio</h1>
+        <p>Fabio said ok <b><span id="ok_count">0</span> times</b> today.</p>
+        <button id="ok_btn" onclick="saidOk()">Ok!</button>
+    </div>
+
+    <hr>
+    <h2>History</h2>
+
+    <div id="ok_history"></div>
+
+    <div id="ok_history_action">
+        <button id="ok_reset" onclick="resetToday()">Reset today</button>
+    </div>
+
+    <hr>
+    <h2>Info</h2>
+    <p>Keep track of how many times Fabio says "Ok" during the lecture by pressing the "Ok" button or the space bar</p>
+</body>
+
+<script>
+const okCount = document.getElementById("ok_count");
+const okMarquee = document.getElementById("ok_marquee");
+const okHistory = document.getElementById("ok_history");
+const today = new Date().toISOString().slice(0, 10);
+
+var localData = JSON.parse(window.localStorage.getItem("history"));
+if (!localData) localData = {};
+if (!localData[today]) localData[today] = 0;
+
+
+function updateUI() {
+    let str = "";
+    Object.keys(localData).forEach((day) => {
+        str += `<p><b>${day}</b>: ${localData[day]} times</p>`;
+    });
+
+    okHistory.innerHTML = str;
+    okCount.innerText = localData[today];
+}
+
+function saidOk() {
+    okMarquee.style.opacity = "1";
+    setTimeout(() => { okMarquee.style.opacity = "0"; }, 2500);
+
+    localData[today] = localData[today] ?  localData[today] + 1 : 1;
+    window.localStorage.setItem("history", JSON.stringify(localData));
+    updateUI();
+}
+
+function resetToday() {
+    localData[today] = 0;
+    updateUI();
+}
+
+document.body.onkeyup = (e) => {
+    if (e.keyCode === 32) {
+        saidOk();
+    }
+};
+</script>
+</html>
